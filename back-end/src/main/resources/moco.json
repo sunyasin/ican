@@ -1,0 +1,23 @@
+[
+  {
+    "description": "dont working",
+    "request": {
+      "method": "get",
+      "uri": "http://localhost:8888/subscribe"
+      //"uri" : {
+      //  "startsWith": "/openapi/v1/customers/"
+      //}
+    },
+    "response": {
+      "status": 200,
+      "json": {
+        "controlQuestionId": 1,
+        "controlQuestionText": "Example control question",
+        "answerMinLength": 3
+      },
+      "headers": {
+        "Contetnt-Type": "application/json"
+      }
+    }
+  }
+]

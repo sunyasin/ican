@@ -1,0 +1,2 @@
+-- executed on startup
+COMMIT ;

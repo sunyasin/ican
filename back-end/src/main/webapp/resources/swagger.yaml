@@ -1,0 +1,833 @@
+swagger: '2.0'
+info:
+  description: >-
+    iCAN! API  --- Важно --> Всё API, кроме команд login и registration,
+    работает только с передачей в headers токена сессии с именем USER_TOKEN. Для
+    ответов с типом ...List в ответ идет сразу массив без имени! Постраничный
+    вывод - это имена типов заканчиваются на "Paged"
+  version: '1.0'
+  title: Backend Rest Api documentation
+  contact:
+    name: contact@email
+  license:
+    name: Swagger Editor
+    url: 'http://editor.swagger.io/#/'
+host: 'localhost:8080'
+basePath: /
+tags:
+  - name: auth
+    description: API аутентификации
+  - name: main
+    description: основное API
+  - name: files
+    description: файловое API
+  - name: main-groups
+    description: работа с группами
+  - name: main-messages
+    description: работа с сообщениями
+  - name: main-profiles
+    description: работа с профилями
+paths:
+  '/api/file/upload/{profileId}':
+    post:
+      tags:
+        - files
+      summary: загрузка файла на сервер и привязка его как лого для профайла
+      operationId: file-upload
+      parameters:
+        - name: profileId
+          type: integer
+          in: path
+          required: true
+        - name: file
+          type: string
+          in: query
+          required: true
+          description: бинарный файл как параметр multipart/form-data
+      responses:
+        '200':
+          description: ok
+  /api/file/download:
+    get:
+      tags:
+        - files
+      summary: загрузка файла с сервера
+      operationId: file-download
+      parameters:
+        - name: filename
+          type: string
+          in: query
+          required: true
+          description: имя файла - будет поиск в заданной папке (проперти filestorage.dir)
+      responses:
+        '200':
+          description: ok
+  '/api/tag/{tagId}/subscribe':
+    put:
+      tags:
+        - main
+      summary: подписка на таг для текущего пользователя
+      operationId: tag-subscribe
+      parameters:
+        - name: tagId
+          type: integer
+          in: path
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/tag/{tagId}/unsubscribe':
+    put:
+      tags:
+        - main
+      summary: отписка на таг для текущего пользователя
+      operationId: tag-UNsubscribe
+      parameters:
+        - name: tagId
+          type: integer
+          in: path
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/profile/{profileId}':
+    get:
+      tags:
+        - main-profiles
+      summary: запрос чужого профиля по id
+      operationId: foregin-profile-get
+      parameters:
+        - name: profileId
+          type: integer
+          in: path
+          required: true
+      responses:
+        '200':
+          description: данные профайла
+          schema:
+            $ref: '#/definitions/ForeignProfileInfo'
+  /api/tag:
+    get:
+      tags:
+        - main
+      summary: список подписок на таги (категории) для текущего пользователя
+      operationId: tag-list
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: токен сессии
+          schema:
+            $ref: '#/definitions/TagInfoList'
+  /api/login:
+    post:
+      tags:
+        - auth
+      summary: логин
+      operationId: login
+      produces:
+        - application/json
+      parameters:
+        - name: loginInfo
+          schema:
+            $ref: '#/definitions/LoginInfo'
+          in: body
+          description: логин пользователя
+          required: true
+      responses:
+        '200':
+          description: токен сессии
+          schema:
+            $ref: '#/definitions/Token'
+  /api/logout:
+    get:
+      tags:
+        - auth
+      summary: логаут
+      operationId: logout
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+  /api/register:
+    post:
+      tags:
+        - auth
+      summary: решистрация нового пользователя
+      operationId: reg
+      produces:
+        - application/json
+      parameters:
+        - name: username
+          schema:
+            $ref: '#/definitions/RegistrationInfo'
+          in: body
+          description: данные нового пользоватля
+          required: true
+      responses:
+        '200':
+          description: OK
+  /api/profile:
+    get:
+      tags:
+        - main-profiles
+      summary: запрос своего профиля
+      operationId: own-profile-get
+      responses:
+        '200':
+          description: данные профайла
+          schema:
+            $ref: '#/definitions/OwnProfileInfo'
+  /api/profile/update:
+    put:
+      tags:
+        - main-profiles
+      summary: обновление своего профиля
+      operationId: own-profile-update
+      consumes:
+        - application/json
+      parameters:
+        - name: profileInfo
+          schema:
+            $ref: '#/definitions/SubjectInfoForUpdate'
+          in: body
+          description: данные профиля
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/board/{profileId}':
+    get:
+      tags:
+        - main
+      summary: запрос всех сообщений профиля по id
+      operationId: list-board-foreign
+      produces:
+        - application/json
+      parameters:
+        - name: profileId
+          type: integer
+          in: path
+          required: true
+      responses:
+        '200':
+          description: список сообщений
+          schema:
+            $ref: '#/definitions/BoardMessageInfoList'
+  /api/board:
+    get:
+      tags:
+        - main
+      summary: запрос сообщений своего профиля
+      operationId: list-board-own
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: список сообщений
+          schema:
+            $ref: '#/definitions/BoardMessageInfoList'
+  /api/board/update:
+    post:
+      tags:
+        - main
+      summary: добавление сообщения
+      operationId: board-add
+      consumes:
+        - application/json
+      parameters:
+        - name: MessageInfo
+          schema:
+            $ref: '#/definitions/MessageInfo'
+          in: body
+          description: данные сообщения
+          required: true
+      responses:
+        '200':
+          description: ok
+  /api/grouped:
+    get:
+      tags:
+        - main
+      summary: группированная лента - начало прсмотра ленты
+      operationId: list-grouped
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: список групп ленты
+          schema:
+            $ref: '#/definitions/LentaGroupedList'
+  '/api/profiles/group/{groupId}':
+    get:
+      tags:
+        - main-profiles
+      summary: профайлы из группы
+      operationId: profiles-group
+      produces:
+        - application/json
+      parameters:
+        - name: groupId
+          type: integer
+          in: path
+          description: id группы
+          required: true
+      responses:
+        '200':
+          description: список профайлов в группе
+          schema:
+            $ref: '#/definitions/ProfileItemList'
+  /api/profiles/bookmarked:
+    get:
+      tags:
+        - main-profiles
+      summary: профайлы из закладок
+      operationId: profiles-bookmarked
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: список профайлов в закладках
+          schema:
+            $ref: '#/definitions/ProfileItemList'
+  /api/profiles/subscribed:
+    get:
+      tags:
+        - main-profiles
+      summary: профайлы из подписок
+      operationId: profiles-subscribed
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: список профайлов в подписках
+          schema:
+            $ref: '#/definitions/ProfileItemList'
+  '/api/profiles/tag/{tagId}':
+    get:
+      tags:
+        - main-profiles
+      summary: профайлы по тегу сообщений
+      operationId: profiles-tag
+      produces:
+        - application/json
+      parameters:
+        - name: tagId
+          type: integer
+          in: path
+          description: id тэга
+          required: true
+      responses:
+        '200':
+          description: список профайлов
+          schema:
+            $ref: '#/definitions/ProfileItemListPaged'
+  '/api/messages/tag/{tagId}':
+    get:
+      tags:
+        - main-messages
+      summary: сообщения по выбранному тегу
+      operationId: messages-tag
+      produces:
+        - application/json
+      parameters:
+        - name: tagId
+          type: integer
+          in: path
+          description: id тэга
+          required: true
+      responses:
+        '200':
+          description: список профайлов
+          schema:
+            $ref: '#/definitions/MessageInfoList'
+  '/api/messages/group/{groupId}':
+    get:
+      tags:
+        - main-messages
+      summary: сообщения  из группы
+      operationId: messages-group
+      produces:
+        - application/json
+      parameters:
+        - name: groupId
+          type: integer
+          in: path
+          description: id группы
+          required: true
+      responses:
+        '200':
+          description: список профайлов в группе
+          schema:
+            $ref: '#/definitions/MessageInfoList'
+  /api/messages/bookmarked:
+    get:
+      tags:
+        - main-messages
+      summary: messages из закладок
+      operationId: messages-bookmarked
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: список messages в закладках
+          schema:
+            $ref: '#/definitions/MessageInfoList'
+  /api/messages/subscribed:
+    get:
+      tags:
+        - main-messages
+      summary: messages из подписок
+      operationId: messages-subscribed
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: список messages в подписках
+          schema:
+            $ref: '#/definitions/MessageInfoList'
+  '/api/group/{groupId}/add/{profileId}':
+    put:
+      tags:
+        - main-groups
+      summary: >-
+        приписать профайл к группе. Происходит подписка если ее не было и
+        привязка этой подписки к группе.
+      operationId: add-to-group
+      parameters:
+        - name: groupId
+          type: integer
+          in: path
+          description: id группы
+          required: true
+        - name: profileId
+          type: integer
+          in: path
+          description: id профиля
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/group/add/{name}':
+    post:
+      tags:
+        - main-groups
+      summary: добавить новую группу
+      operationId: add-group
+      parameters:
+        - name: name
+          type: string
+          in: path
+          description: имя группы
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/group/{groupId}/rename/{name}':
+    put:
+      tags:
+        - main-groups
+      summary: переименовать группу
+      operationId: rename-group
+      parameters:
+        - name: name
+          type: string
+          in: path
+          description: имя группы
+          required: true
+        - name: groupId
+          type: integer
+          in: path
+          description: id группы
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/group/{groupId}/delete':
+    put:
+      tags:
+        - main-groups
+      summary: удалить группу
+      operationId: delete-group
+      parameters:
+        - name: groupId
+          type: integer
+          in: path
+          description: id группы
+          required: true
+      responses:
+        '200':
+          description: ok
+  /api/group:
+    get:
+      tags:
+        - main-groups
+      summary: список групп
+      operationId: list-group
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/GroupInfoList'
+  '/api/profile/{profileId}/subscribe-toggle':
+    post:
+      tags:
+        - main-profiles
+      summary: инверсия подписки на профайл
+      operationId: subscribe-profile
+      parameters:
+        - name: profileId
+          type: integer
+          in: path
+          description: id профиля
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/message/{messageId}/read':
+    put:
+      tags:
+        - main-messages
+      summary: пометить сообщение как прочитанное
+      operationId: read-msg
+      parameters:
+        - name: messageId
+          type: integer
+          in: path
+          description: id сообщения
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/message/{messageId}/bookmark':
+    put:
+      tags:
+        - main-messages
+      summary: сообщение в закладки
+      operationId: book-msg
+      parameters:
+        - name: messageId
+          type: integer
+          in: path
+          description: id сообщения
+          required: true
+      responses:
+        '200':
+          description: ok
+  '/api/message/{messageId}/unbookmark':
+    put:
+      tags:
+        - main-messages
+      summary: удалить сообщение из  закладок
+      operationId: unbook-msg
+      parameters:
+        - name: messageId
+          type: integer
+          in: path
+          description: id сообщения
+          required: true
+      responses:
+        '200':
+          description: ok
+definitions:
+  GroupInfoList:
+    properties:
+      '':
+        type: array
+        items:
+          $ref: '#/definitions/GroupInfo'
+  GroupInfo:
+    description: группа
+    properties:
+      Id:
+        type: integer
+      name:
+        type: string
+      imageFile:
+        type: string
+      position:
+        type: integer
+        description: позиция в списке
+      unreadCount:
+        type: integer
+        description: ко-во непрочитанных сообщений
+      itemCount:
+        type: integer
+        description: ко-во профилей в группе
+  ProfileItemList:
+    properties:
+      '':
+        type: array
+        items:
+          $ref: '#/definitions/ProfileItem'
+  ProfileItemListPaged:
+    properties:
+      pageIndex:
+        type: integer
+        description: >-
+          номер этой страницы с данными. Его передавать парметром ?page для
+          получения следующей порции. Размер устанавливается сервером. Если
+          придет пустой массив, значит данных больше нет.
+      result:
+        type: array
+        items:
+          $ref: '#/definitions/ProfileItem'
+  ProfileItem:
+    description: плашка профайла в списке
+    properties:
+      profileId:
+        type: integer
+      name:
+        type: string
+      imageFile:
+        type: string
+      isFavorite:
+        type: boolean
+        description: есть подписка на этот профиль или нет
+      unreadCount:
+        type: integer
+        description: ко-во непрочитанных сообщений
+  LentaGroupedList:
+    properties:
+      '':
+        type: array
+        items:
+          $ref: '#/definitions/LentaInfo'
+  LentaInfo:
+    description: >-
+      группы в ленте. Сначала созданные пользователем, закладки, подписки, на
+      каждый подписанный тэг
+    properties:
+      Id:
+        type: integer
+      type:
+        type: string
+        description: 'тип группы (PRIVATE,    BOOKMARKED,    SUBSCRIBED,    TAGGED)'
+      name:
+        type: string
+        description: имя группы
+      imageFile:
+        type: string
+        description: имя файла картинки
+      position:
+        type: integer
+        description: позиция в списке
+      itemCount:
+        type: integer
+        description: кол-во профайлов в группе
+      unreadCount:
+        type: integer
+        description: кол-во непрочитанных сообщений в группе
+  MessageInfoList:
+    properties:
+      '':
+        type: array
+        items:
+          $ref: '#/definitions/MessageInfo'
+  MessageInfo:
+    description: данные сообщения
+    properties:
+      msgId:
+        type: integer
+      tagId:
+        type: integer
+        description: тэг сообщения
+      type:
+        type: string
+        description: тип сообщения
+      message:
+        type: string
+        description: текст сообщения
+      imageFile:
+        type: string
+        description: имя файла картинки
+  SubjectInfoForUpdate:
+    description: данные обновляемого профиля
+    properties:
+      id:
+        type: integer
+      login:
+        type: string
+      password:
+        type: string
+      name:
+        type: string
+      address:
+        type: string
+        description: адрес для бизнесов
+      email:
+        type: string
+      description:
+        type: string
+      contacts:
+        type: string
+      isAutoBonusActive:
+        type: boolean
+        description: начисляются ли бонусы в ато режиме
+      subscribedTags:
+        $ref: '#/definitions/TagInfoList'
+  ForeignProfileInfo:
+    description: данные чужого профиля
+    properties:
+      id:
+        type: integer
+      unreadCount:
+        type: integer
+        description: кл-во непрочитанных сообщений текущим пользователем в этом профайле
+      picture:
+        type: string
+        description: имя файла картинки
+      name:
+        type: string
+        description: имя профиля
+      address:
+        type: string
+      description:
+        type: string
+        description: описание о себе
+      contacts:
+        type: string
+        description: контакты
+      type:
+        type: string
+        description: 'тип  (PERSON, SHOP, BUSINESSMAN )'
+      bonuses:
+        type: integer
+        description: >-
+          количество накопленных бонусов в этом бизнесе, если этот профиль -
+          типа shop или business
+      actionCount:
+        type: integer
+        description: количество действующих акций
+      eventCount:
+        type: integer
+        description: количество актуальных событий
+      subscriberCount:
+        type: integer
+        description: количество подписчиков
+      lastMessage:
+        $ref: '#/definitions/BoardMessageInfo'
+  OwnProfileInfo:
+    description: данные чужого профиля
+    properties:
+      id:
+        type: integer
+      unreadCount:
+        type: integer
+        description: кл-во непрочитанных сообщений текущим пользователем в этом профайле
+      picture:
+        type: string
+        description: имя файла картинки
+      name:
+        type: string
+        description: имя профиля
+      address:
+        type: string
+      description:
+        type: string
+        description: описание о себе
+      contacts:
+        type: string
+        description: контакты
+      type:
+        type: string
+        description: 'тип  (PERSON, SHOP, BUSINESSMAN )'
+      bonuses:
+        type: integer
+        description: >-
+          количество накопленных бонусов в этом бизнесе, если этот профиль -
+          типа shop или business
+      subscriberCount:
+        type: integer
+        description: количество подписчиков
+  BoardMessageInfoList:
+    properties:
+      '':
+        type: array
+        items:
+          $ref: '#/definitions/BoardMessageInfo'
+  BoardMessageInfo:
+    description: сообщение на стене
+    properties:
+      boardId:
+        type: integer
+        description: id записи на стене
+      subjId:
+        type: integer
+        description: id автора
+      likes:
+        type: integer
+        description: лайков
+      created:
+        type: string
+        description: дата создания
+      msgId:
+        type: integer
+        description: id сообщения
+      type:
+        type: integer
+        description: 'тип сообщения (    NEWS,    EVENT,    ACTION)'
+      message:
+        type: string
+        description: текст сообщения
+      imageFile:
+        type: string
+        description: картинка сообщения
+      eventDate:
+        type: string
+        description: дата события для типа событие
+      eventTime:
+        type: string
+        description: время события для типа событие
+  TagInfoList:
+    description: список тэгов. в ответ идет сразу массив без имени!
+    properties:
+      '':
+        type: array
+        items:
+          $ref: '#/definitions/TagInfo'
+  TagInfo:
+    description: данные тэга (категории) с которыми публикуются сообщения
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      msgCount:
+        type: integer
+        description: кл-во сообщений с этим тэгом
+  RegistrationInfo:
+    properties:
+      accountType:
+        type: string
+        description: >-
+          тип нового профайла (PERSON, SHOP, BUSINESSMAN ). Для Person поля
+          address и mapCoordinates не нужны
+      login:
+        type: string
+      password:
+        type: string
+      name:
+        type: string
+      address:
+        type: string
+        description: адрес для бизнесов
+      mapCoordinates:
+        type: string
+        description: координаты на карте для бизнесов
+  LoginInfo:
+    properties:
+      username:
+        type: string
+        description: имя пользователя
+      password:
+        type: string
+        description: пароль
+  Token:
+    properties:
+      USER_TOKEN:
+        type: string
+        description: токен сесии

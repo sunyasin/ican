@@ -1,0 +1,56 @@
+group 'can'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'war'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+war {
+    archiveName = 'backend.war'
+}
+
+dependencies {
+    compile project(path: ':common')
+    compile "org.springframework:spring-context:${springframeworkVersion}"
+    compile "org.springframework:spring-webmvc:${springframeworkVersion}"
+    compile "org.springframework:spring-web:${springframeworkVersion}"
+    compile "org.springframework.security:spring-security-core:${springframeworkSecurityVersion}"
+    compile "log4j:log4j:1.2.17"
+    compile "org.slf4j:slf4j-simple:${slf4jVersion}"
+    compile "javax.servlet:servlet-api:2.5"
+    compile "javax.servlet.jsp:jsp-api:2.1"
+    compile "javax.servlet:jstl:1.2"
+    compile "org.apache.httpcomponents:httpclient:4.3.6"
+    compile "org.apache.commons:commons-io:1.3.2"
+    compile "org.apache.commons:commons-lang3:3.3.2"
+    compile "commons-fileupload:commons-fileupload:1.3.2"
+    compile "org.postgresql:postgresql:9.4.1212.jre7"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.1"
+    compile "org.hibernate:hibernate-entitymanager:${hibernateVersion}"
+    compile "org.hibernate:hibernate-java8:${hibernateVersion}"
+    compile "org.hibernate:hibernate-validator:5.1.0.Final"
+    compile "org.springframework.data:spring-data-jpa:${springFrameworkDataVersion}"
+    compile "javax:javaee-api:7.0"
+    testCompile "org.hamcrest:hamcrest-all:1.3"
+    testCompile "junit:junit:${junitVersion}"
+    testCompile "org.springframework:spring-test:${springTest}"
+    testCompile "org.mockito:mockito-all:1.10.8"
+    compile "org.mockito:mockito-core:1.10.19"
+    testCompile "com.jayway.jsonpath:json-path:2.2.0"
+    testCompile "com.jayway.jsonpath:json-path-assert:0.8.1"
+    compile "org.jsoup:jsoup:1.10.1"
+}

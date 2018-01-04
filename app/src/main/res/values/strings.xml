@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Городская рекламная сеть</string>
+    <string name="google_api_key">AIzaSyCsOldKL5_pdEg0xZIu-G-xRbB0ULeUZwE</string>
+
+    <!-- Strings related to login and register-->
+    <string name="prompt_phone">Телефон</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="full_name">Ф.И.О.</string>
+    <string name="address">Адрес</string>
+    <string name="action_sign_in">Войти</string>
+    <string name="action_sign_in_short">Войти</string>
+    <string name="error_invalid_email">Неверный формат телефона</string>
+    <string name="error_invalid_password">Неверный формат пароля</string>
+    <string name="error_incorrect_password">Неверный пароль</string>
+    <string name="error_field_required">Это поле обязательно</string>
+    <string name="permission_rationale">"Для предоставления email требутеся доступ к контактам"</string>
+    <string name="action_register">Регистрация</string>
+    <string name="new_profile_title">Новый профиль</string>
+    <string name="radio_private_title">Личный</string>
+    <string name="radio_shop_title">Бизнес</string>
+    <string name="radio_business_title">Бизнесмен</string>
+    <string name="location_description">Выбрать местоположение</string>
+    <string name="title_activity_main_tab">Лента</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_group_content">Лента</string>
+    <string name="title_home">Профайлы</string>
+    <string name="title_dashboard">Объявления</string>
+</resources>

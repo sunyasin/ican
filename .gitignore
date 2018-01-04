@@ -1,0 +1,15 @@
+*.iml
+*.ipr
+*.iws
+*.ids
+/.idea
+/.shelf
+/.gradle
+*/build
+/temp
+*/classes
+*/out
+*.log
+*.war
+/build/*
+*/.idea
